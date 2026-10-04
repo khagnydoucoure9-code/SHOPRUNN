@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SHOP</title>
+<meta name="theme-color" content="#0a0a0b">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500&family=Barlow+Condensed:wght@700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<header>
+  <div class="wrap">
+    <a class="logo" href="#top" id="siteName">SHOP</a>
+    <nav>
+      <a href="#produits">Produits</a>
+      <a href="#contact">Contact</a>
+    </nav>
+  </div>
+</header>
+
+<main id="top">
+  <section class="hero wrap">
+    <h1 id="heroTitle">SHOP</h1>
+    <p class="muted" id="heroDesc"></p>
+    <p class="muted">Pas de paiement en ligne : tu choisis ici, tu achètes en privé.</p>
+  </section>
+
+  <section class="wrap" id="produits">
+    <div class="tools">
+      <input id="search" type="search" placeholder="Rechercher un produit" aria-label="Rechercher">
+      <div class="chips" id="chips"></div>
+    </div>
+
+    <div id="featuredBlock" hidden><h2>À la une</h2><div class="grid" id="featured"></div></div>
+    <div id="newBlock" hidden><h2>Nouveautés</h2><div class="grid" id="news"></div></div>
+    <h2 id="allTitle">Tous les produits</h2>
+    <div class="grid" id="grid"><p class="muted">Chargement…</p></div>
+  </section>
+
+  <section class="wrap" id="contact">
+    <h2>Acheter / Nous contacter</h2>
+    <div class="contact" id="contactBox"></div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <span class="muted" id="footName">SHOP</span>
+    <a class="adminlink" href="admin/login.html">Admin</a>
+  </div>
+</footer>
+
+<div class="modal" id="modal" aria-hidden="true"><div class="sheet" id="sheet"></div></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="js/config.js"></script>
+<script src="js/shop.js"></script>
+</body>
+</html>

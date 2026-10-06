@@ -21,6 +21,7 @@ async function go(view, arg) {
     else if (view === 'settings') await settingsForm('Paramètres', [
       ['site_name', 'Nom du site'], ['description', 'Description', true]]);
     else if (view === 'qr') await qrView();
+    else if (view === 'messages') await messagesView();
   } catch (e) { fail(e); }
 }
 $('#nav').addEventListener('click', e => { const b = e.target.closest('button'); if (b) go(b.dataset.view); });
@@ -259,11 +260,48 @@ async function qrView() {
   };
 }
 
+// ---------------------------------------------------------------- messages
+async function updateBadge() {
+  const { count } = await sb.from('messages').select('id', { count: 'exact', head: true }).eq('is_read', false);
+  const b = document.querySelector('[data-view=messages]');
+  if (b) b.textContent = 'Messages' + (count ? ` (${count})` : '');
+}
+async function messagesView() {
+  const { data, error } = await sb.from('messages').select('*').order('created_at', { ascending: false }).limit(200);
+  if (error) throw error;
+  main.innerHTML = '<h1>Messages</h1>' + (data.map(m => `<div class="row" data-id="${m.id}" data-read="${m.is_read}">
+    <div class="grow"><b>${esc(m.sender_name)}</b> <span class="tag ${m.is_read ? '' : 'ok'}">${m.is_read ? 'Lu' : 'Nouveau'}</span><br>
+      <span class="muted">${esc(m.contact)} · ${new Date(m.created_at).toLocaleString('fr-FR')}${m.product_name ? ' · ' + esc(m.product_name) : ''}</span>
+      <p style="margin-top:6px;white-space:pre-line">${esc(m.body)}</p></div>
+    <div class="acts"><button class="btn ghost" data-a="read">${m.is_read ? 'Marquer non lu' : 'Marquer lu'}</button>
+      <button class="btn danger" data-a="del">Supprimer</button></div></div>`).join('') || '<p class="muted">Aucun message pour le moment.</p>');
+  main.onclick = async e => {
+    const b = e.target.closest('[data-a]'); if (!b) return;
+    const row = b.closest('.row'), id = row.dataset.id;
+    try {
+      if (b.dataset.a === 'del') {
+        if (!confirm('Supprimer ce message ?')) return;
+        const r = await sb.from('messages').delete().eq('id', id); if (r.error) throw r.error;
+      } else {
+        const r = await sb.from('messages').update({ is_read: row.dataset.read !== 'true' }).eq('id', id); if (r.error) throw r.error;
+      }
+      messagesView();
+    } catch (err) { fail(err); }
+  };
+  updateBadge();
+}
+
 // ---------------------------------------------------------------- démarrage (garde admin)
 (async () => {
   const session = await Auth.guard();
   if (!session) return;
   document.body.classList.remove('hidden');
   sb.auth.onAuthStateChange(ev => { if (ev === 'SIGNED_OUT') location.replace('login.html'); });
+  sb.channel('admin-messages')
+    .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'messages' }, () => {
+      toast('Nouveau message'); updateBadge();
+      if (document.querySelector('#nav .on')?.dataset.view === 'messages') messagesView();
+    }).subscribe();
+  updateBadge();
   go('dashboard');
 })();

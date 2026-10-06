@@ -63,3 +63,6 @@ footer{margin-top:64px;border-top:1px solid var(--line);padding:20px 0}
 footer .wrap{display:flex;justify-content:space-between}
 .adminlink{color:var(--mut);font-size:13px;text-decoration:none;opacity:.6}
 @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+.msgform{display:grid;gap:10px;max-width:520px}
+.msgform textarea{resize:vertical}
+.hp{position:absolute;left:-9999px;width:1px;height:1px;opacity:0}

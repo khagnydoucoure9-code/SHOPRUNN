@@ -82,7 +82,6 @@ function openProduct(id, keep) {
   if (openImg >= im.length) openImg = 0;
   const sz = sizesOf(p);
   const sn = handle(settings.snapchat), ig = handle(settings.instagram);
-  const label = p.product_sizes && openSize ? ` (taille ${openSize})` : '';
   $('#sheet').innerHTML = `
     <button class="close" aria-label="Fermer" data-close>✕</button>
     <div>
@@ -100,6 +99,7 @@ function openProduct(id, keep) {
         : `<li class="out">${s.size}<span>Rupture</span></li>`).join('') || '<li class="muted">Tailles bientôt disponibles</li>'}</ul>
       <button class="btn" data-buy>Acheter / Nous contacter</button>
       ${showBuy ? `<div class="buybox">
+        <button class="btn ghost" data-ask>Envoyer un message à propos de ce produit</button>
         <p>Pour acheter « ${esc(p.name)} », contacte-nous directement${sn ? ' sur Snapchat' : ''}. Indique le produit et ta taille.</p>
         ${sn ? `<a class="btn" href="https://www.snapchat.com/add/${encodeURIComponent(sn)}" target="_blank" rel="noopener">Snapchat @${esc(sn)}</a>` : ''}
         ${ig ? `<a class="btn ghost" href="https://instagram.com/${encodeURIComponent(ig)}" target="_blank" rel="noopener">Instagram @${esc(ig)}</a>` : ''}
@@ -126,6 +126,12 @@ document.addEventListener('click', e => {
   const chip = t.closest('.chip'); if (chip) { catId = chip.dataset.cat || null; return render(); }
   if (t.closest('[data-close]') || t === $('#modal')) return closeModal();
   const th = t.closest('[data-img]'); if (th) { openImg = +th.dataset.img; return openProduct(openId, true); }
+  if (t.closest('[data-ask]')) {
+    const p = products.find(x => x.id === openId);
+    setAbout(p); closeModal();
+    $('#message').scrollIntoView(); $('#msgForm').sender_name.focus();
+    return;
+  }
   if (t.closest('[data-buy]')) { showBuy = true; return openProduct(openId, true); }
 });
 document.addEventListener('keydown', e => {
@@ -133,6 +139,31 @@ document.addEventListener('keydown', e => {
   if (e.key === 'Enter' && e.target.classList?.contains('card')) openProduct(e.target.dataset.id);
 });
 $('#search').addEventListener('input', e => { q = e.target.value; render(); });
+
+// ---- Messagerie ----
+let about = null;
+function setAbout(p) {
+  about = p ? { id: p.id, name: p.name } : null;
+  $('#about').hidden = !about;
+  $('#about').textContent = about ? `À propos de : ${about.name}` : '';
+}
+$('#msgForm').addEventListener('submit', async e => {
+  e.preventDefault();
+  const f = e.target, st = $('#msgStatus');
+  if (f.website.value) return;                       // anti-spam (champ piège)
+  let last = 0; try { last = +localStorage.getItem('lastMsg') || 0; } catch (_) {}
+  if (Date.now() - last < 30000) { st.textContent = 'Patiente quelques secondes avant un nouveau message.'; return; }
+  const btn = f.querySelector('button'); btn.disabled = true; st.textContent = 'Envoi…';
+  const { error } = await sb.from('messages').insert({
+    product_id: about?.id || null, product_name: about?.name || null,
+    sender_name: f.sender_name.value.trim(), contact: f.contact.value.trim(), body: f.body.value.trim()
+  });
+  btn.disabled = false;
+  if (error) { console.error(error); st.textContent = 'Envoi impossible. Réessaie ou contacte-nous directement.'; return; }
+  try { localStorage.setItem('lastMsg', Date.now()); } catch (_) {}
+  f.reset(); setAbout(null);
+  st.textContent = 'Message envoyé. On te répond vite.';
+});
 
 // ---- Temps réel : tout changement admin met le site à jour ----
 let timer;

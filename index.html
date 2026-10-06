@@ -16,6 +16,7 @@
     <a class="logo" href="#top" id="siteName">SHOP</a>
     <nav>
       <a href="#produits">Produits</a>
+      <a href="#message">Message</a>
       <a href="#contact">Contact</a>
     </nav>
   </div>
@@ -38,6 +39,19 @@
     <div id="newBlock" hidden><h2>Nouveautés</h2><div class="grid" id="news"></div></div>
     <h2 id="allTitle">Tous les produits</h2>
     <div class="grid" id="grid"><p class="muted">Chargement…</p></div>
+  </section>
+
+  <section class="wrap" id="message">
+    <h2>Envoyer un message</h2>
+    <form id="msgForm" class="msgform">
+      <p class="muted" id="about" hidden></p>
+      <input name="sender_name" placeholder="Ton prénom" maxlength="80" required>
+      <input name="contact" placeholder="Ton Snapchat, Instagram, email ou numéro" maxlength="120" required>
+      <textarea name="body" rows="4" maxlength="1000" placeholder="Ton message (produit, taille…)" required></textarea>
+      <input name="website" class="hp" tabindex="-1" autocomplete="off" aria-hidden="true">
+      <button class="btn" type="submit">Envoyer</button>
+      <p class="muted" id="msgStatus" role="status"></p>
+    </form>
   </section>
 
   <section class="wrap" id="contact">

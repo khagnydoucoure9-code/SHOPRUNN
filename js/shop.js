@@ -128,14 +128,7 @@ document.addEventListener('click', e => {
   const th = t.closest('[data-img]'); if (th) { openImg = +th.dataset.img; return openProduct(openId, true); }
   if (t.closest('[data-ask]')) {
     const p = products.find(x => x.id === openId);
-    closeModal();
-    if (getToken()) {
-      const ta = $('#chatForm').elements.body;
-      ta.value = `À propos de « ${p.name} » : `;
-      $('#message').scrollIntoView(); ta.focus();
-    } else {
-      setAbout(p); $('#message').scrollIntoView(); $('#msgForm').sender_name.focus();
-    }
+    closeModal(); askAbout(p);
     return;
   }
   if (t.closest('[data-buy]')) { showBuy = true; return openProduct(openId, true); }
@@ -145,71 +138,6 @@ document.addEventListener('keydown', e => {
   if (e.key === 'Enter' && e.target.classList?.contains('card')) openProduct(e.target.dataset.id);
 });
 $('#search').addEventListener('input', e => { q = e.target.value; render(); });
-
-// ---- Discussion ----
-const getToken = () => { try { return localStorage.getItem('chatToken'); } catch (_) { return null; } };
-const setToken = t => { try { t ? localStorage.setItem('chatToken', t) : localStorage.removeItem('chatToken'); } catch (_) {} };
-let about = null, lastCount = -1, poll = null;
-
-function setAbout(p) {
-  about = p ? { id: p.id, name: p.name } : null;
-  $('#about').hidden = !about;
-  $('#about').textContent = about ? `À propos de : ${about.name}` : '';
-}
-const fmt = d => new Date(d).toLocaleString('fr-FR', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' });
-const bubbles = l => l.map(m => `<div class="bub ${m.sender === 'visitor' ? 'me' : 'them'}">${esc(m.body)}<small>${fmt(m.created_at)}</small></div>`).join('');
-
-async function refreshChat(force) {
-  const t = getToken(); if (!t) return;
-  const { data, error } = await sb.rpc('visitor_get', { p_token: t });
-  if (error) { console.error(error); return; }
-  if (!data.length) { setToken(null); showChat(); return; }      // conversation supprimée
-  if (force || data.length !== lastCount) {
-    lastCount = data.length;
-    const c = $('#chat'), bottom = c.scrollHeight - c.scrollTop - c.clientHeight < 40;
-    c.innerHTML = bubbles(data);
-    if (bottom || force) c.scrollTop = c.scrollHeight;
-  }
-}
-function showChat() {
-  const t = getToken();
-  $('#chatBox').hidden = !t; $('#msgForm').hidden = !!t;
-  clearInterval(poll);
-  if (t) { lastCount = -1; refreshChat(true); poll = setInterval(() => { if (!document.hidden) refreshChat(); }, 4000); }
-}
-
-// démarrer une conversation
-$('#msgForm').addEventListener('submit', async e => {
-  e.preventDefault();
-  const f = e.target, st = $('#msgStatus');
-  if (f.website.value) return;                                    // anti-spam (champ piège)
-  const btn = f.querySelector('button'); btn.disabled = true; st.textContent = 'Envoi…';
-  const { data, error } = await sb.rpc('start_conversation', {
-    p_name: f.sender_name.value.trim(), p_contact: f.contact.value.trim(), p_body: f.body.value.trim(),
-    p_product_id: about?.id || null, p_product_name: about?.name || null
-  });
-  btn.disabled = false;
-  if (error) { console.error(error); st.textContent = 'Envoi impossible. Réessaie dans un instant.'; return; }
-  setToken(data); f.reset(); setAbout(null); st.textContent = ''; showChat();
-});
-// répondre dans la conversation
-$('#chatForm').addEventListener('submit', async e => {
-  e.preventDefault();
-  const f = e.target, ta = f.elements.body, body = ta.value.trim(), st = $('#msgStatus');
-  if (!body) return;
-  const btn = f.querySelector('button'); btn.disabled = true;
-  const { error } = await sb.rpc('visitor_send', { p_token: getToken(), p_body: body });
-  btn.disabled = false;
-  if (error) { console.error(error); st.textContent = 'Message non envoyé. Réessaie dans quelques secondes.'; return; }
-  st.textContent = ''; ta.value = ''; refreshChat(true);
-});
-$('#chatForm').elements.body.addEventListener('keydown', e => {
-  if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) { e.preventDefault(); e.target.form.requestSubmit(); }
-});
-$('#newChat').addEventListener('click', () => {
-  if (confirm('Commencer une nouvelle conversation ? Tu ne verras plus celle-ci sur cet appareil.')) { setToken(null); setAbout(null); showChat(); }
-});
-showChat();
 
 // ---- Temps réel : tout changement admin met le site à jour ----
 let timer;

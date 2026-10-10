@@ -44,13 +44,16 @@
   <section class="wrap" id="message">
     <h2>Discussion</h2>
     <div id="chatBox" hidden>
-      <div class="chat" id="chat"></div>
-      <form id="chatForm" class="chatform">
-        <textarea name="body" rows="2" maxlength="1000" placeholder="Ton message (Ctrl + Entrée pour envoyer)" required></textarea>
-        <button class="btn" type="submit">Envoyer</button>
-      </form>
-      <p class="muted">Reviens sur le site pour lire la réponse : tu n'es pas prévenu automatiquement.</p>
-      <button class="btn ghost" id="newChat" type="button">Nouvelle conversation</button>
+      <div class="chatwrap">
+        <div class="chathead"><b>Ta discussion</b><button class="linkbtn" id="newChat" type="button">Nouvelle conversation</button></div>
+        <div class="chat" id="chat"></div>
+        <div class="editing" hidden><span>✎ Modification du message</span><button type="button" data-cancel aria-label="Annuler">✕</button></div>
+        <form class="composer" id="chatForm">
+          <textarea name="body" rows="1" maxlength="1000" placeholder="Écris un message…" required></textarea>
+          <button class="send" type="submit" aria-label="Envoyer">➤</button>
+        </form>
+      </div>
+      <p class="muted">Clique sur l'un de tes messages pour le modifier ou le supprimer. Reviens sur le site pour lire la réponse : tu n'es pas prévenu automatiquement.</p>
     </div>
     <form id="msgForm" class="msgform">
       <p class="muted" id="about" hidden></p>
@@ -81,5 +84,7 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="js/config.js"></script>
 <script src="js/shop.js"></script>
+<script src="js/chatui.js"></script>
+<script src="js/chat.js"></script>
 </body>
 </html>

@@ -42,16 +42,25 @@
   </section>
 
   <section class="wrap" id="message">
-    <h2>Envoyer un message</h2>
+    <h2>Discussion</h2>
+    <div id="chatBox" hidden>
+      <div class="chat" id="chat"></div>
+      <form id="chatForm" class="chatform">
+        <textarea name="body" rows="2" maxlength="1000" placeholder="Ton message (Ctrl + Entrée pour envoyer)" required></textarea>
+        <button class="btn" type="submit">Envoyer</button>
+      </form>
+      <p class="muted">Reviens sur le site pour lire la réponse : tu n'es pas prévenu automatiquement.</p>
+      <button class="btn ghost" id="newChat" type="button">Nouvelle conversation</button>
+    </div>
     <form id="msgForm" class="msgform">
       <p class="muted" id="about" hidden></p>
       <input name="sender_name" placeholder="Ton prénom" maxlength="80" required>
       <input name="contact" placeholder="Ton Snapchat, Instagram, email ou numéro" maxlength="120" required>
-      <textarea name="body" rows="4" maxlength="1000" placeholder="Ton message (produit, taille…)" required></textarea>
+      <textarea name="body" rows="4" maxlength="1000" placeholder="Ton premier message (produit, taille…)" required></textarea>
       <input name="website" class="hp" tabindex="-1" autocomplete="off" aria-hidden="true">
-      <button class="btn" type="submit">Envoyer</button>
-      <p class="muted" id="msgStatus" role="status"></p>
+      <button class="btn" type="submit">Démarrer la discussion</button>
     </form>
+    <p class="muted" id="msgStatus" role="status"></p>
   </section>
 
   <section class="wrap" id="contact">

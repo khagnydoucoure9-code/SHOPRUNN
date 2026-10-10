@@ -66,3 +66,6 @@ footer .wrap{display:flex;justify-content:space-between}
 .msgform{display:grid;gap:10px;max-width:520px}
 .msgform textarea{resize:vertical}
 .hp{position:absolute;left:-9999px;width:1px;height:1px;opacity:0}
+.msgform{display:grid;gap:10px;max-width:520px}
+.msgform textarea{resize:vertical}
+.hp{position:absolute;left:-9999px;width:1px;height:1px;opacity:0}

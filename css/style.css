@@ -66,6 +66,10 @@ footer .wrap{display:flex;justify-content:space-between}
 .msgform{display:grid;gap:10px;max-width:520px}
 .msgform textarea{resize:vertical}
 .hp{position:absolute;left:-9999px;width:1px;height:1px;opacity:0}
-.msgform{display:grid;gap:10px;max-width:520px}
-.msgform textarea{resize:vertical}
-.hp{position:absolute;left:-9999px;width:1px;height:1px;opacity:0}
+[hidden]{display:none!important}
+.chat{display:flex;flex-direction:column;gap:8px;max-height:50vh;overflow-y:auto;padding:12px;background:var(--card);border:1px solid var(--line);border-radius:12px;margin:12px 0;max-width:520px}
+.bub{max-width:82%;padding:8px 12px;border-radius:14px;white-space:pre-wrap;word-break:break-word}
+.bub small{display:block;opacity:.6;font-size:11px;margin-top:2px}
+.bub.them{align-self:flex-start;background:#1e1e22}
+.bub.me{align-self:flex-end;background:var(--acc);color:#111}
+.chatform{display:grid;gap:8px;max-width:520px;margin-bottom:10px}
